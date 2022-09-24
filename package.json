@@ -4,7 +4,8 @@
   "description": "A square centric 10x12 mail-box chess board representation implemented using typescript.",
   "main": "chess-board-state.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test": "tsc && node test"
   },
   "repository": {
     "type": "git",

@@ -36,7 +36,9 @@ const PIECE_MASK = 0b00000011;
 
 const OUTBOUND = 255;
 
-/** Chess board representation class. */
+/** Chess board representation class. 
+ * `https://www.chessprogramming.org/10x12_Board` Sargon.
+*/
 export class chess_board {
   private board: Uint8Array;
   private white: color_t;
