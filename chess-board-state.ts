@@ -52,48 +52,48 @@ export class chess_board {
     this.clear();
   }
 
-  public line_slide_possible(xs: index_t, ys: index_t, xd: index_t, yd: index_t) : boolean {
-    if (xs === xd) {
-      const distance = yd - ys;
-      const step = (distance < 0) ? -1 : 1;
-      for (let j = (ys + step) as index_t; j !== yd; j += step) {
-        if (this.getPiece(xs, j) !== EMPTY) {
-          return false;
-        }
-      }
-    } else if (ys === yd) {
-      const distance = xd - xs;
-      const step = (distance < 0) ? -1 : 1;
-      for (let i = (xs + step) as index_t; i !== xd; i += step) {
-        if (this.getPiece(i, ys) !== EMPTY) {
-          return false;
-        }
-      }
-    } else {
-      console.error('not a straight line');
+  public movable_inaxis(xs: index_t, ys: index_t, xd: index_t, yd: index_t) : boolean {
+    if (xs === xd && ys === yd) {
+      console.error('moved in the same square');
+      return false;
+    } else if (xs !== xd && ys !== yd) {
+      console.error('move is not aligned in axis');
       return false;
     }
+
+    const xydist = (xd + yd) - (xs + ys);
+    const step = xydist / Math.abs(xydist) * ((xd - xs) ? 10 : 1);
+
+    let index = (xs + 2) * 10 + (ys + 1);
+    const end = (xd + 2) * 10 + (yd + 1) - step;
+
+    while (index !== end) {
+      index += step;
+      if (this.board[index] !== EMPTY) {
+        return false;
+      }
+    }
+
     return true;
   }
 
-  public slant_slide_possible(xs: index_t, ys: index_t, xd: index_t, yd: index_t) : boolean {
-    const xdistance = xd - xs;
-    const ydistance = yd - ys;
-    const xstep = (xdistance < 0) ? -1 : 1;
-    const ystep = (ydistance < 0) ? -1 : 1;
+  public movable_diagonal(xs: index_t, ys: index_t, xd: index_t, yd: index_t) : boolean {
+    const xdist = xd - xs;
+    const ydist = yd - ys;
+    const xstep = xdist / Math.abs(xdist) * 10;
+    const ystep = ydist / Math.abs(ydist);
 
-    if (Math.abs(xdistance) !== Math.abs(ydistance)) {
+    if (Math.abs(xdist) !== Math.abs(ydist)) {
       console.error('given coordinates is not a slant');
       return false;
     }
 
-    for (let
-      i = (xs + xstep) as index_t,
-      j = (ys + ystep) as index_t;
-      i !== xd && j !== yd;
-      i += xstep, j += ystep)
-    {
-      if (this.getPiece(i, j) !== EMPTY) {
+    let index = (xs + 2) * 10 + (ys + 1);
+    const end = (xd + 2) * 10 + (yd + 1) - xstep - ystep;
+
+    while (index !== end) {
+      index += xstep + ystep;
+      if (this.board[index] !== EMPTY) {
         return false;
       }
     }
@@ -209,41 +209,14 @@ export class chess_board {
     this.clear();
     this.white = WHITE;
 
-    this.setPiece(0, 0, ROOK);
-    this.setPiece(0, 1, KNIGHT);
-    this.setPiece(0, 2, BISHOP);
-    this.setPiece(0, 3, QUEEN);
-    this.setPiece(0, 4, KING);
-    this.setPiece(0, 5, BISHOP);
-    this.setPiece(0, 6, KNIGHT);
-    this.setPiece(0, 7, ROOK);
+    const INITIAL_BACKRANK_PIECES = [ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK];
 
-    this.setPiece(1, 0, PAWN);
-    this.setPiece(1, 1, PAWN);
-    this.setPiece(1, 2, PAWN);
-    this.setPiece(1, 3, PAWN);
-    this.setPiece(1, 4, PAWN);
-    this.setPiece(1, 5, PAWN);
-    this.setPiece(1, 6, PAWN);
-    this.setPiece(1, 7, PAWN);
-
-    this.setPiece(7, 0, BLACK | ROOK);
-    this.setPiece(7, 1, BLACK | KNIGHT);
-    this.setPiece(7, 2, BLACK | BISHOP);
-    this.setPiece(7, 3, BLACK | QUEEN);
-    this.setPiece(7, 4, BLACK | KING);
-    this.setPiece(7, 5, BLACK | BISHOP);
-    this.setPiece(7, 6, BLACK | KNIGHT);
-    this.setPiece(7, 7, BLACK | ROOK);
-
-    this.setPiece(6, 0, BLACK | PAWN);
-    this.setPiece(6, 1, BLACK | PAWN);
-    this.setPiece(6, 2, BLACK | PAWN);
-    this.setPiece(6, 3, BLACK | PAWN);
-    this.setPiece(6, 4, BLACK | PAWN);
-    this.setPiece(6, 5, BLACK | PAWN);
-    this.setPiece(6, 6, BLACK | PAWN);
-    this.setPiece(6, 7, BLACK | PAWN);
+    for (let i = 0; i < 8; ++i) {
+      this.setPiece(0, i as index_t, INITIAL_BACKRANK_PIECES[i]);
+      this.setPiece(1, i as index_t, PAWN);
+      this.setPiece(6, i as index_t, BLACK | PAWN);
+      this.setPiece(7, i as index_t, BLACK | INITIAL_BACKRANK_PIECES[i]);
+    }
   }
 
   /** Display the raw board in the console */
@@ -268,17 +241,19 @@ export class chess_board {
   /** Display the board in the console */
   public log() {
     console.log(`color: ${(this.white) ? 'White' : 'Black'}\n`);
+    const col: string[][] = [];
     for (let i = 0; i < 8; ++i) {
-      console.log(
-        this.getPiece(i as index_t, 0).toString(16).padStart(2, '0'),
-        this.getPiece(i as index_t, 1).toString(16).padStart(2, '0'),
-        this.getPiece(i as index_t, 2).toString(16).padStart(2, '0'),
-        this.getPiece(i as index_t, 3).toString(16).padStart(2, '0'),
-        this.getPiece(i as index_t, 4).toString(16).padStart(2, '0'),
-        this.getPiece(i as index_t, 5).toString(16).padStart(2, '0'),
-        this.getPiece(i as index_t, 6).toString(16).padStart(2, '0'),
-        this.getPiece(i as index_t, 7).toString(16).padStart(2, '0')
-      )
+      const rows: string[] = []
+      for (let j = 0; j < 8; ++j) {
+        rows.push(
+          this.getPiece(i as index_t, j as index_t).toString(16).padStart(2, '0')
+        )
+      }
+      col.push(rows);
+    }
+
+    for (let i = 0; i < 8; ++i) {
+      console.log(...col[i]);
     }
   }
 }
