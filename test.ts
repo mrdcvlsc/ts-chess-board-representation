@@ -20,67 +20,97 @@ function TEST() {
     correct_start_pos
   );
 
-  tests.assert_eq(
+  tests.assert_false(
     'y axis slide check - collision 1',
-    board.line_slide_possible(0, 0, 6, 0), false
+    board.line_slide_possible(0, 0, 6, 0)
   );
 
-  tests.assert_eq(
+  tests.assert_false(
     'y axis slide check - collision 2',
-    board.line_slide_possible(6, 0, 0, 0), false
+    board.line_slide_possible(6, 0, 0, 0)
   );
 
-  tests.assert_eq(
+  tests.assert_true(
     'y axis slide check - collision 3',
-    board.line_slide_possible(1, 0, 6, 0), true
+    board.line_slide_possible(1, 0, 6, 0)
   );
 
-  tests.assert_eq(
+  tests.assert_true(
     'y axis slide check - collision 4',
-    board.line_slide_possible(6, 0, 1, 0), true
+    board.line_slide_possible(6, 0, 1, 0)
   );
 
   board.setPiece(3, 6, 1);
   board.setPiece(3, 0, 1);
 
-  tests.assert_eq(
+  tests.assert_false(
     'y axis slide check - collision 5',
-    board.line_slide_possible(1, 6, 6, 6), false
+    board.line_slide_possible(1, 6, 6, 6)
   );
 
-  tests.assert_eq(
+  tests.assert_false(
     'y axis slide check - collision 6',
-    board.line_slide_possible(6, 6, 1, 6), false
+    board.line_slide_possible(6, 6, 1, 6)
   );
 
-  tests.assert_eq(
+  tests.assert_true(
     'y axis slide check - collision 7',
-    board.line_slide_possible(1, 6, 2, 6), true
+    board.line_slide_possible(1, 6, 2, 6)
   );
 
-  tests.assert_eq(
+  tests.assert_true(
     'y axis slide check - collision 8',
-    board.line_slide_possible(6, 6, 4, 6), true
+    board.line_slide_possible(6, 6, 4, 6)
   );
 
-  tests.assert_eq(
+  tests.assert_true(
     'x axis slide check - collision 9',
-    board.line_slide_possible(3, 0, 3, 6), true
+    board.line_slide_possible(3, 0, 3, 6)
   );
 
-  tests.assert_eq(
+  tests.assert_true(
     'x axis slide check - collision 10',
-    board.line_slide_possible(3, 6, 3, 0), true
+    board.line_slide_possible(3, 6, 3, 0)
   );
 
-  tests.assert_eq(
+  tests.assert_false(
     'x axis slide check - collision 11',
-    board.line_slide_possible(3, 0, 3, 7), false
+    board.line_slide_possible(3, 0, 3, 7)
   );
 
-  tests.assert_eq(
+  tests.assert_false(
     'x axis slide check - collision 12',
-    board.line_slide_possible(3, 7, 3, 0), false
+    board.line_slide_possible(3, 7, 3, 0)
+  );
+
+  tests.assert_false(
+    'slant slide check - collision 1',
+    board.slant_slide_possible(0, 0, 7, 7)
+  );
+
+  tests.assert_true(
+    'slant slide check - collision 2',
+    board.slant_slide_possible(1, 1, 6, 6)
+  );
+
+  tests.assert_false(
+    'slant slide check - collision 3',
+    board.slant_slide_possible(7, 7, 0, 0)
+  );
+
+  tests.assert_true(
+    'slant slide check - collision 4',
+    board.slant_slide_possible(6, 6, 1, 1)
+  );
+
+  tests.assert_false(
+    'slant slide check - collision 5',
+    board.slant_slide_possible(1, 4, 4, 7)
+  );
+
+  tests.assert_false(
+    'slant slide check - collision 6',
+    board.slant_slide_possible(4, 7, 1, 4)
   );
 
   board.log();

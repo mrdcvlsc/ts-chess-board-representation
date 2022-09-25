@@ -111,5 +111,8 @@ export class Asserts {
     }
     console.log('-----------------------------------------------');
     console.log(`TEST : ${(final_result) ? 'PASSED' : 'FAILED'}`)
+    if (final_result === false) {
+      throw new Error("Verdict : FAILED - some tests failed");
+    }
   }
 }

@@ -61,7 +61,6 @@ export class chess_board {
           return false;
         }
       }
-      return true;
     } else if (ys === yd) {
       const distance = xd - xs;
       const step = (distance < 0) ? -1 : 1;
@@ -70,11 +69,36 @@ export class chess_board {
           return false;
         }
       }
-      return true;
     } else {
       console.error('not a straight line');
       return false;
     }
+    return true;
+  }
+
+  public slant_slide_possible(xs: index_t, ys: index_t, xd: index_t, yd: index_t) : boolean {
+    const xdistance = xd - xs;
+    const ydistance = yd - ys;
+    const xstep = (xdistance < 0) ? -1 : 1;
+    const ystep = (ydistance < 0) ? -1 : 1;
+
+    if (Math.abs(xdistance) !== Math.abs(ydistance)) {
+      console.error('given coordinates is not a slant');
+      return false;
+    }
+
+    for (let
+      i = (xs + xstep) as index_t,
+      j = (ys + ystep) as index_t;
+      i !== xd && j !== yd;
+      i += xstep, j += ystep)
+    {
+      if (this.getPiece(i, j) !== EMPTY) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /** Move a piece in the board.
