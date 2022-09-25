@@ -32,7 +32,7 @@ const ROOK = 4;
 const QUEEN = 5;
 const KING = 6;
 const EMPTY = 0;
-const PIECE_MASK = 0b00000011;
+const PIECE_MASK = 0b00000111;
 
 const OUTBOUND = 255;
 
@@ -219,22 +219,52 @@ export class chess_board {
     }
   }
 
-  /** Display the raw board in the console */
-  public log_raw() {
+  /** Display the board in the console */
+  public log_piece() {
     console.log(`color: ${(this.white) ? 'White' : 'Black'}\n`);
-    for (let i = 0; i < 120; i += 10) {
-      console.log(
-        this.board[i].toString(16).padStart(2,'0'),
-        this.board[i + 1].toString(16).padStart(2,'0'),
-        this.board[i + 2].toString(16).padStart(2,'0'),
-        this.board[i + 3].toString(16).padStart(2,'0'),
-        this.board[i + 4].toString(16).padStart(2,'0'),
-        this.board[i + 5].toString(16).padStart(2,'0'),
-        this.board[i + 6].toString(16).padStart(2,'0'),
-        this.board[i + 7].toString(16).padStart(2,'0'),
-        this.board[i + 8].toString(16).padStart(2,'0'),
-        this.board[i + 9].toString(16).padStart(2,'0')
-      );
+    const col: string[][] = [];
+    for (let i = 0; i < 8; ++i) {
+      const rows: string[] = []
+      for (let j = 0; j < 8; ++j) {
+        const piece: number = this.getPiece(i as index_t, j as index_t);
+        rows.push()
+        // piece move checks.
+        switch(PIECE_MASK & piece) {
+          case PAWN: {
+            rows.push(((piece & BLACK) === BLACK) ? 'p' : 'P');
+            break;
+          }
+          case ROOK: {
+            rows.push(((piece & BLACK) === BLACK) ? 'r' : 'R');
+            break;
+          }
+          case KNIGHT: {
+            rows.push(((piece & BLACK) === BLACK) ? 'n' : 'N');
+            break;
+          }
+          case BISHOP: {
+            rows.push(((piece & BLACK) === BLACK) ? 'b' : 'B');
+            break;
+          }
+          case KING: {
+            rows.push(((piece & BLACK) === BLACK) ? 'k' : 'K');
+            break;
+          }
+          case QUEEN: {
+            rows.push(((piece & BLACK) === BLACK) ? 'q' : 'Q');
+            break;
+          }
+          case EMPTY: {
+            rows.push('.');
+            break;
+          }
+        }
+      }
+      col.push(rows);
+    }
+
+    for (let i = 0; i < 8; ++i) {
+      console.log(...col[i]);
     }
   }
 

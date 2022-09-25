@@ -114,6 +114,7 @@ function TEST() {
   );
 
   board.log();
+  board.log_piece();
 
   tests.verdict();
 }
